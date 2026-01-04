@@ -64,10 +64,10 @@ static int f_clear(lua_State* L) {
 	connection.sock = -1;
 	return 0;
 }
-
+ 
 static const struct luaL_Reg lib[] = {
 	{"init",     f_init},
-	{"send",   f_send},
+	{"send",   f_send}, 
 	{"listen",     f_listen},
 	{"clear",     f_clear},
 	{NULL, NULL}
