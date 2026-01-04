@@ -1,4 +1,4 @@
--- mod-version:3 lite-xl 2.1
+-- mod-version:3 lite-xl 3.0
 local core = require "core"
 local config = require "core.config"
 local common = require "core.common"
@@ -8,7 +8,7 @@ local View = require "core.view"
 local Object = require "core.object"
 local discord = require "plugins.discord-presence.discord"
 
--- stolen from https://github.com/TorchedSammy/litepresence/ Copyright (c) 2021 TorchedSammy
+-- stolen from https://github.com/TorchedSammy/litepresence/
 local function makeTbl(tbl)
 	local t = {}
 	for exts, ftype in pairs(tbl) do
@@ -324,26 +324,22 @@ local rpc = Discord()
 
 
 -- function replacements
-
--- unless one day they finally decided that autoreloading user module is not a good idea
--- this will be required since user expects their config to automagically update
-
 local on_quit_project = core.on_quit_project
 function core.on_quit_project(...)
     rpc:stop()
     on_quit_project(...)
 end
 
-local set_active_view = core.set_active_view
+local old_set_active_view = core.set_active_view
 function core.set_active_view(view)
-    set_active_view(view)
-    core.try(rpc.update, rpc)
+    old_set_active_view(view)
+    core.try(rpc.bump, rpc)
 end
 
 for _, fn in ipairs { "mouse_pressed", "mouse_released", "text_input" } do
-    local oldfn = View["on_" .. fn]
-    View["on_" .. fn] = function(...)
-        rpc:bump()
+    local oldfn = RootView["on_" .. fn]
+    RootView["on_" .. fn] = function(...)
+        core.try(rpc.bump, rpc)
         return oldfn(...)
     end
 end
