@@ -288,7 +288,7 @@ function Discord:start()
     self.running = true
     self.disconnect = nil
     self.last_activity = system.get_time()
-    self.start_time = config.plugins.discord_rpc.elapsed_time and os.time() or nil
+    self.start_time = self.start_time or (config.plugins.discord_rpc.elapsed_time and os.time()) or nil
 
     discord.on_event("ready", function()
         core.log("lite-xl-discord: connected to RPC!")
